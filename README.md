@@ -41,6 +41,12 @@ To verify that runtime dependencies are minimal, run `cd library && mvn dependen
 [INFO] \- org.slf4j:slf4j-api:jar:{version}:compile
 ```
 
+## Documentation
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Mastercard/oauth2-client-java)
+[![Context7: Ask](https://img.shields.io/badge/Context7-Ask-green)](https://context7.com/mastercard/oauth2-client-java)
+[![Javadoc](https://javadoc.io/badge2/com.mastercard.developer/oauth2-client-java/javadoc.svg)](https://javadoc.io/doc/com.mastercard.developer/oauth2-client-java)
+
 ## Usage
 
 ### Maven dependency
@@ -64,13 +70,6 @@ dependencies {
     implementation "com.mastercard.developer:oauth2-client-java:$oauth2ClientVersion"
 }
 ```
-
-### Documentation
-
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Mastercard/oauth2-client-java)
-[![Javadoc](https://javadoc.io/badge2/com.mastercard.developer/oauth2-client-java/javadoc.svg)](https://javadoc.io/doc/com.mastercard.developer/oauth2-client-java)
-
-A Javadoc site is available at [javadoc.io](https://javadoc.io/doc/com.mastercard.developer/oauth2-client-java).
 
 ### Configuration
 
@@ -356,3 +355,4 @@ cd library && mvn spotless:apply
 - The File Watchers plugin can format `.java` files on save
 
 - See watcher configuration in [`watcherTasks.xml`](./.idea/watcherTasks.xml)
+
