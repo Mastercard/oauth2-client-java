@@ -43,9 +43,12 @@ To verify that runtime dependencies are minimal, run `cd library && mvn dependen
 
 ## Documentation
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Mastercard/oauth2-client-java)
-[![Context7: Ask](https://img.shields.io/badge/Context7-Ask-green)](https://context7.com/mastercard/oauth2-client-java)
 [![Javadoc](https://javadoc.io/badge2/com.mastercard.developer/oauth2-client-java/javadoc.svg)](https://javadoc.io/doc/com.mastercard.developer/oauth2-client-java)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Mastercard/oauth2-client-java)
+[![Context7: Ask](https://img.shields.io/badge/Context7-Ask-green)](https://context7.com/mastercard/oauth2-client-java?tab=chat)
+
+
+A Javadoc site is available on javadoc.io. Additionally, you can use DeepWiki and Context7 to explore the library further.
 
 ## Usage
 
@@ -99,9 +102,15 @@ Notes:
 * All credentials shown here are examples from [Using OAuth 2.0 to Access Mastercard APIs](https://mstr.cd/43CuHBY). Replace them with your own.
 * For more information on scope resolvers, DPoP key providers, and access token stores, see [Extension Points](#extension-points).
 
+### Low-Level API
+
+The [`OAuth2Handler`](./library/src/main/java/com/mastercard/developer/oauth2/core/OAuth2Handler.java) class provides public static methods that handle client assertion generation, DPoP proof creation, access token request creation and access token response parsing.
+
 ### Supported HTTP Clients
 
-Pick the HTTP client that works best for your application. All implementations provide the same OAuth 2.0 functionality with minimal code changes.
+For a higher-level experience, use the provided HTTP-client related classes (interceptors, filters, or client wrappers), automatically invoking the `OAuth2Handler` logic under the hood. 
+
+Pick the HTTP client that works best for your application. All implementations provide the same functionality.
 
 #### OkHttp
 
