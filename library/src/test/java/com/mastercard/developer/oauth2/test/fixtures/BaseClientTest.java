@@ -11,7 +11,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.function.ThrowingSupplier;
 import org.junit.jupiter.params.provider.Arguments;
+import org.opentest4j.TestAbortedException;
 
 public abstract class BaseClientTest extends BaseTest {
 
@@ -68,63 +70,27 @@ public abstract class BaseClientTest extends BaseTest {
     }
 
     protected static TestConfig getMastercardConfig() {
-        try {
-            return TestConfig.getMastercardApiConfig();
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(TestConfig::getMastercardApiConfig);
     }
 
     private static TestConfig getMastercardConfigWithEcKey() {
-        try {
-            return TestConfig.getMastercardApiConfig(StaticKeys.EC_KEY_PAIR);
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(() -> TestConfig.getMastercardApiConfig(StaticKeys.EC_KEY_PAIR));
     }
 
     private static TestConfig getMastercardConfigWithRsaKey() {
-        try {
-            return TestConfig.getMastercardApiConfig(StaticKeys.RSA_KEY_PAIR);
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(() -> TestConfig.getMastercardApiConfig(StaticKeys.RSA_KEY_PAIR));
     }
 
     protected static TestConfig getFakeConfig() {
-        try {
-            return TestConfig.getFakeApiConfig(authorizationServer, resourceServer);
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(() -> TestConfig.getFakeApiConfig(authorizationServer, resourceServer));
     }
 
     private static TestConfig getFakeConfigWithEcKey() {
-        try {
-            return TestConfig.getFakeApiConfig(authorizationServer, resourceServer, StaticKeys.EC_KEY_PAIR);
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(() -> TestConfig.getFakeApiConfig(authorizationServer, resourceServer, StaticKeys.EC_KEY_PAIR));
     }
 
     private static TestConfig getFakeConfigWithRsaKey() {
-        try {
-            return TestConfig.getFakeApiConfig(authorizationServer, resourceServer, StaticKeys.RSA_KEY_PAIR);
-        } catch (IllegalStateException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+        return runOrWrap(() -> TestConfig.getFakeApiConfig(authorizationServer, resourceServer, StaticKeys.RSA_KEY_PAIR));
     }
 
     private static Arguments createConfigArgument(String name, Supplier<TestConfig> configSupplier) {
@@ -134,5 +100,15 @@ public abstract class BaseClientTest extends BaseTest {
     protected static String readResourceId(String resource) throws OAuth2ClientJsonException {
         Map<String, Object> jsonMap = JsonProvider.getInstance().parse(resource);
         return (String) jsonMap.get("id");
+    }
+
+    private static <T> T runOrWrap(ThrowingSupplier<T> action) {
+        try {
+            return action.get();
+        } catch (TestAbortedException | IllegalStateException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new IllegalStateException(e);
+        }
     }
 }
