@@ -364,4 +364,3 @@ cd library && mvn spotless:apply
 - The File Watchers plugin can format `.java` files on save
 
 - See watcher configuration in [`watcherTasks.xml`](./.idea/watcherTasks.xml)
-

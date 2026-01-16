@@ -1,5 +1,7 @@
 package com.mastercard.developer.oauth2.test.fixtures;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
 import com.mastercard.developer.oauth2.config.OAuth2Config;
 import com.mastercard.developer.oauth2.config.SecurityProfile;
 import com.mastercard.developer.oauth2.core.dpop.StaticDPoPKeyProvider;
@@ -51,14 +53,19 @@ public class TestConfig {
         String readScopes = getEnv("READ_SCOPES");
         String writeScopes = getEnv("WRITE_SCOPES");
 
-        validateEnvVariable("PRIVATE_KEY", privateKeyContent);
-        validateEnvVariable("CLIENT_ID", clientId);
-        validateEnvVariable("KID", kid);
-        validateEnvVariable("TOKEN_ENDPOINT", tokenEndpoint);
-        validateEnvVariable("ISSUER", issuer);
-        validateEnvVariable("API_BASE_URL", apiBaseUrlEnv);
-        validateEnvVariable("READ_SCOPES", readScopes);
-        validateEnvVariable("WRITE_SCOPES", readScopes);
+        try {
+            validateEnvVariable("PRIVATE_KEY", privateKeyContent);
+            validateEnvVariable("CLIENT_ID", clientId);
+            validateEnvVariable("KID", kid);
+            validateEnvVariable("TOKEN_ENDPOINT", tokenEndpoint);
+            validateEnvVariable("ISSUER", issuer);
+            validateEnvVariable("API_BASE_URL", apiBaseUrlEnv);
+            validateEnvVariable("READ_SCOPES", readScopes);
+            validateEnvVariable("WRITE_SCOPES", readScopes);
+        } catch (Exception e) {
+            // Disable the calling test when environment variables are missing
+            assumeTrue(false, "Test disabled: %s".formatted(e.getMessage()));
+        }
 
         OAuth2Config oauth2Config = OAuth2Config.builder()
             .securityProfile(SecurityProfile.FAPI2SP_PRIVATE_KEY_DPOP)

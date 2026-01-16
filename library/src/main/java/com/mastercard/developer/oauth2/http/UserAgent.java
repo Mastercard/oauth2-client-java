@@ -25,7 +25,7 @@ public final class UserAgent {
         String javaVer = System.getProperty("java.version", "unknown");
         String osName = System.getProperty("os.name", "unknown");
         String osVer = System.getProperty("os.version", "").trim();
-        var runtime = "Java/" + javaVer;
+        String runtime = "Java/" + javaVer;
         String osPart = osName + (osVer.isEmpty() ? "" : " " + osVer);
         return String.format("%s/%s (%s; %s)", PRODUCT, VERSION, runtime, osPart);
     }

@@ -10,12 +10,12 @@ import java.util.Optional;
 public class GsonJsonProvider implements JsonProvider {
 
     private static final Gson gson = new Gson();
+    private static final Type MAP_TYPE = new TypeToken<Map<String, Object>>() {}.getType();
 
     @Override
     public Map<String, Object> parse(String json) throws OAuth2ClientJsonException {
         try {
-            Type type = new TypeToken<Map<String, Object>>() {}.getType();
-            return gson.fromJson(json, type);
+            return gson.fromJson(json, MAP_TYPE);
         } catch (Exception e) {
             throw new OAuth2ClientJsonException("Failed to read JSON", e);
         }
