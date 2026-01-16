@@ -11,6 +11,32 @@
     <artifactId>oauth2-client-java</artifactId>
     <packaging>jar</packaging>
 
+    <name>${project.artifactId}</name>
+    <description>Access Mastercard APIs with OAuth 2.0 and FAPI 2.0</description>
+    <url>https://github.com/Mastercard/oauth2-client-java</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Mastercard Developers</name>
+            <organization>Mastercard</organization>
+            <organizationUrl>https://developers.mastercard.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Mastercard/oauth2-client-java.git</connection>
+        <developerConnection>scm:git:git@github.com:Mastercard/oauth2-client-java.git</developerConnection>
+        <url>https://github.com/Mastercard/oauth2-client-java</url>
+    </scm>
+
+
     <properties>
         <!-- Latest versions supported (as of January 2026) -->
         <okhttp.version>5.3.2</okhttp.version>
@@ -175,6 +201,32 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!-- Flatten POM for Maven Central deployment (no parent reference) -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>oss</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- Write a "VERSION" file into target/classes -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -248,6 +300,23 @@
                 </executions>
             </plugin>
             <plugin>
+                <!-- Attach source code -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- Javadoc JAR for https://www.javadoc.io/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -263,6 +332,25 @@
                             <nodeprecated>true</nodeprecated>
                             <additionalOptions>-Xdoclint:none</additionalOptions>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- GPG signing for Maven Central deployment -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.8</version>
+                <configuration>
+                    <!-- Mastercard PGP key ID -->
+                    <keyname>BA52E056C094571E6577EAED65AA8812882B653A</keyname>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>

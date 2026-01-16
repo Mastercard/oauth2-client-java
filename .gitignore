@@ -16,3 +16,6 @@ target
 
 # Test variables
 .env
+
+# Maven Central artifacts
+.flattened-pom.xml

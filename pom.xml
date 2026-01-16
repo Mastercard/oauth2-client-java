@@ -17,4 +17,24 @@
         <module>test-clients</module>
         <module>library</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <!-- https://central.sonatype.org/publish/publish-portal-maven/ -->
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.10.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <autoPublish>false</autoPublish>
+                    <publishingServerId>central</publishingServerId>
+                    <excludeArtifacts>
+                        <excludeArtifact>oauth2-client-java-root</excludeArtifact>
+                        <excludeArtifact>oauth2-client-java-test-clients</excludeArtifact>
+                    </excludeArtifacts>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
