@@ -13,6 +13,7 @@ target
 
 # Code style
 !.idea/watcherTasks.xml
+!.idea/scopes/Java_code_files.xml
 
 # Test variables
 .env
