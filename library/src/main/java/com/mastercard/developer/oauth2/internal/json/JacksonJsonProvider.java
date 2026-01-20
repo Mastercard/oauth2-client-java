@@ -1,10 +1,10 @@
 package com.mastercard.developer.oauth2.internal.json;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mastercard.developer.oauth2.internal.json.exception.OAuth2ClientJsonException;
 import java.util.Map;
 import java.util.Optional;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 public class JacksonJsonProvider implements JsonProvider {
 

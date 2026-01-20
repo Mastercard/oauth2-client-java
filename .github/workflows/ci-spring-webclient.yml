@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         java-version: [ '17' ]
-        spring-webflux-version: [ '6.1.0', '6.1.21', '6.2.0', '6.2.15', '7.0.2' ]
+        spring-webflux-version: [ '6.1.0', '6.1.21', '6.2.0', '6.2.15', '7.0.3' ]
     name: spring-webflux v${{ matrix.spring-webflux-version }}
     env:
       OKHTTP: 'com.squareup.okhttp3:okhttp,com.squareup.okhttp3:logging-interceptor'
