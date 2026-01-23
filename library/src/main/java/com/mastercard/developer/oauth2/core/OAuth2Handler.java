@@ -323,11 +323,11 @@ public final class OAuth2Handler {
             if (null == tokenValue) {
                 throw new OAuth2ClientException("Missing value in access token response: access_token");
             }
-            var expiresInSeconds = (Integer) jsonMap.get("expires_in");
+            var expiresInSeconds = (Number) jsonMap.get("expires_in");
             if (null == expiresInSeconds) {
                 throw new OAuth2ClientException("Missing value in access token response: expires_in");
             }
-            Instant expiry = Instant.now().plusSeconds(expiresInSeconds);
+            Instant expiry = Instant.now().plusSeconds(expiresInSeconds.intValue());
             String scopeNode = (String) jsonMap.get("scope");
             Set<String> scopes = (scopeNode == null) ? Set.of() : Set.of(scopeNode.trim().split("\\s+"));
             return new AccessTokenResponse(tokenValue, scopes, expiry);

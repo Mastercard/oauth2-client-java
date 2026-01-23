@@ -44,8 +44,24 @@ class JsonProvidersTest {
         // THEN
         assertEquals("eyJ4NXQjUzI1NiI6Ii...oPIq4PZf2WaMxLow", map.get("access_token"));
         assertEquals("DPoP", map.get("token_type"));
-        assertEquals(900.0, ((Number) map.get("expires_in")).doubleValue());
+        assertEquals(900, ((Number) map.get("expires_in")).intValue());
         assertEquals("service:scope1 service:scope2", map.get("scope"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("jsonProviders")
+    void parse_ShouldParseExpireInDecimalValues(JsonProvider provider) throws Exception {
+        // GIVEN
+        var json = """
+            {
+              "expires_in": 900.0
+            }""";
+
+        // WHEN
+        Map<String, Object> map = provider.parse(json);
+
+        // THEN
+        assertEquals(900, ((Number) map.get("expires_in")).intValue());
     }
 
     @ParameterizedTest
