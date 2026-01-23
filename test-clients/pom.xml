@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.mastercard.developer</groupId>
         <artifactId>oauth2-client-java-root</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
     <artifactId>oauth2-client-java-test-clients</artifactId>
     <packaging>jar</packaging>
