@@ -38,7 +38,7 @@
         <!-- OpenAPI Generator with "restclient" -->
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <spring-web-version>6.2.13</spring-web-version>
-        <jackson-version>2.19.2</jackson-version>
+        <jackson-version>2.21.1</jackson-version>
         <jackson-databind-version>2.19.2</jackson-databind-version>
         <jakarta-annotation-version>2.1.1</jakarta-annotation-version>
 
