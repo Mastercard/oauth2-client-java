@@ -3,7 +3,7 @@ package com.mastercard.developer.oauth2.core.dpop;
 /**
  * DPoP key provider used to supply keys for creating DPoP proofs.
  */
-public interface DPoPKeyProvider {
+public sealed interface DPoPKeyProvider permits StaticDPoPKeyProvider {
     /**
      * Gets the current key to be used for signing DPoP proofs.
      */

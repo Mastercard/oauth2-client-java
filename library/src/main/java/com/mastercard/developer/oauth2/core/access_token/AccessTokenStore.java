@@ -6,7 +6,7 @@ import java.util.Optional;
  * Interface for caching and retrieving OAuth 2.0 access tokens.
  * Implementations should handle token expiration and provide thread-safe operations.
  */
-public interface AccessTokenStore {
+public sealed interface AccessTokenStore  permits InMemoryAccessTokenStore {
     /**
      * Adds an access token to the store.
      */
