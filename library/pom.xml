@@ -40,7 +40,7 @@
     <properties>
         <!-- Latest versions supported (as of March 2026) -->
         <okhttp.version>5.3.2</okhttp.version>
-        <httpclient.version>5.6</httpclient.version>
+        <httpclient.version>5.6.1</httpclient.version>
         <feign.version>13.9.3</feign.version>
         <spring-web.version>7.0.5</spring-web.version>
         <spring-webflux.version>7.0.5</spring-webflux.version>
