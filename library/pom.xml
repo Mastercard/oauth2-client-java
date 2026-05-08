@@ -43,7 +43,7 @@
         <httpclient.version>5.6</httpclient.version>
         <feign.version>13.9.3</feign.version>
         <spring-web.version>7.0.5</spring-web.version>
-        <spring-webflux.version>7.0.5</spring-webflux.version>
+        <spring-webflux.version>7.0.7</spring-webflux.version>
     </properties>
 
     <dependencies>
