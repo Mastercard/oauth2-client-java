@@ -42,7 +42,7 @@ public interface JsonProvider {
 
         private static JsonProvider createInstance() {
             try {
-                Class.forName("com.fasterxml.jackson.databind.ObjectMapper");
+                Class.forName("tools.jackson.databind.ObjectMapper"); // Jackson 3.x
                 return new JacksonJsonProvider();
             } catch (ClassNotFoundException e) {
                 // Jackson not available, try next
