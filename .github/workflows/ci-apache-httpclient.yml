@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         java-version: [ '17' ]
-        httpclient-version: [ '5.4', '5.5.2', '5.6' ]
+        httpclient-version: [ '5.4.3', '5.5.2', '5.6.2' ]
     name: v${{ matrix.httpclient-version }}
     env:
       OKHTTP: 'com.squareup.okhttp3:okhttp,com.squareup.okhttp3:logging-interceptor'

@@ -216,7 +216,10 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseClientTest {
     }
 
     private static RestClient.RequestHeadersSpec<?> createGetSpec(RestClient restClient, TestConfig testConfig, String resourceId) {
-        return restClient.get().uri(testConfig.getFetchResourceUri(resourceId)).headers(withDummyHeaders(Map.of(ACCEPT.value(), "application/json")));
+        return restClient
+            .get()
+            .uri(testConfig.getFetchResourceUri(resourceId))
+            .headers(withDummyHeaders(Map.of(ACCEPT.value(), "application/json")));
     }
 
     private static RestClient.RequestHeadersSpec<?> createDeleteSpec(RestClient restClient, TestConfig testConfig, String resourceId) {

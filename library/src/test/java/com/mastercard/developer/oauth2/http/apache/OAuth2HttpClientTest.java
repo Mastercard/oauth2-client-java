@@ -231,7 +231,9 @@ class OAuth2HttpClientTest extends BaseClientTest {
         when(resourceResponse.getEntity()).thenReturn(new StringEntity("{\"success\":\"true\"}", ContentType.APPLICATION_JSON));
 
         var delegate = mock(CloseableHttpClient.class);
-        when(delegate.executeOpen(any(), any(), any())).thenReturn(tokenResponse).thenReturn(resourceResponse);
+        when(delegate.executeOpen(any(), any(), any()))
+            .thenReturn(tokenResponse)
+            .thenReturn(resourceResponse);
 
         var postRequest = createPostRequest(testConfig);
 

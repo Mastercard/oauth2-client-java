@@ -12,7 +12,7 @@ public record AccessTokenFilter(Optional<String> jkt, Set<String> scopes) {
      * Creates a new filter with the specified criteria.
      */
     public AccessTokenFilter {
-        scopes = (null == scopes) ? Set.of() : Set.copyOf(scopes);
+        scopes = null == scopes ? Set.of() : Set.copyOf(scopes);
     }
 
     /**

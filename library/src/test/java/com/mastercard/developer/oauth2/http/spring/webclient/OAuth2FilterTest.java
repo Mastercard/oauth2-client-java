@@ -222,7 +222,10 @@ class OAuth2FilterTest extends BaseClientTest {
     }
 
     private static WebClient.RequestHeadersSpec<?> createGetSpec(WebClient webClient, TestConfig testConfig, String resourceId) {
-        return webClient.get().uri(testConfig.getFetchResourceUri(resourceId)).headers(withDummyHeaders(Map.of(ACCEPT.value(), "application/json")));
+        return webClient
+            .get()
+            .uri(testConfig.getFetchResourceUri(resourceId))
+            .headers(withDummyHeaders(Map.of(ACCEPT.value(), "application/json")));
     }
 
     private static WebClient.RequestHeadersSpec<?> createDeleteSpec(WebClient webClient, TestConfig testConfig, String resourceId) {

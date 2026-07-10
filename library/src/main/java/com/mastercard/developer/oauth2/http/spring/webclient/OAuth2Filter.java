@@ -23,15 +23,13 @@ public record OAuth2Filter(ReactiveOAuth2Handler handler, WebClientHttpAdapter a
 
     @Override
     public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
-        return handler
-            .execute(new ReactiveRequestContext(request, next), adapter)
-            .flatMap(materializedResponse ->
-                Mono.just(
-                    ClientResponse.create(HttpStatusCode.valueOf(materializedResponse.statusCode()), ExchangeStrategies.withDefaults().messageReaders())
-                        .headers(headers -> headers.addAll(materializedResponse.headers()))
-                        .body(materializedResponse.body())
-                        .build()
-                )
-            );
+        return handler.execute(new ReactiveRequestContext(request, next), adapter).flatMap(materializedResponse ->
+            Mono.just(
+                ClientResponse.create(HttpStatusCode.valueOf(materializedResponse.statusCode()), ExchangeStrategies.withDefaults().messageReaders())
+                    .headers(headers -> headers.addAll(materializedResponse.headers()))
+                    .body(materializedResponse.body())
+                    .build()
+            )
+        );
     }
 }

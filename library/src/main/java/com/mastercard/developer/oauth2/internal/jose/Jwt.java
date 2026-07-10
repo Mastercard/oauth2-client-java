@@ -47,11 +47,9 @@ public final class Jwt {
         var jsonProvider = JsonProvider.getInstance();
         String headerJson = jsonProvider.write(header);
         String payloadJson = jsonProvider.write(payload);
-        return (
-            "%s.%s".formatted(
-                Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8)),
-                Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8))
-            )
+        return "%s.%s".formatted(
+            Base64.getUrlEncoder().withoutPadding().encodeToString(headerJson.getBytes(StandardCharsets.UTF_8)),
+            Base64.getUrlEncoder().withoutPadding().encodeToString(payloadJson.getBytes(StandardCharsets.UTF_8))
         );
     }
 

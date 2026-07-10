@@ -53,11 +53,9 @@ public final class InMemoryAccessTokenStore implements AccessTokenStore {
      */
     private void removeExpiredTokens() {
         var now = Instant.now();
-        store
-            .entrySet()
-            .removeIf(entry -> {
-                AccessToken accessToken = entry.getValue();
-                return accessToken == null || accessToken.expiresAt().isBefore(now);
-            });
+        store.entrySet().removeIf(entry -> {
+            AccessToken accessToken = entry.getValue();
+            return accessToken == null || accessToken.expiresAt().isBefore(now);
+        });
     }
 }

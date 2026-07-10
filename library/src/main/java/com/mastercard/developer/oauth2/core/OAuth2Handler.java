@@ -202,7 +202,10 @@ public final class OAuth2Handler {
         }
         String dpopProof = createResourceRequestDPoP(config, dpopKeyId, method, resourceUrl, accessToken, nonce);
         logger.debug("Resource request DPoP proof: {}", dpopProof);
-        var headers = new HttpHeaders().add(USER_AGENT, config.getUserAgent()).add(AUTHORIZATION, "DPoP " + accessToken).add(DPOP, dpopProof);
+        var headers = new HttpHeaders()
+            .add(USER_AGENT, config.getUserAgent())
+            .add(AUTHORIZATION, "DPoP " + accessToken)
+            .add(DPOP, dpopProof);
         logger.debug("Sending request");
         Response response = adapter.sendResourceRequest(request, headers);
         updateNonce(adapter, response);
@@ -329,7 +332,7 @@ public final class OAuth2Handler {
             }
             Instant expiry = Instant.now().plusSeconds(expiresInSeconds.intValue());
             String scopeNode = (String) jsonMap.get("scope");
-            Set<String> scopes = (scopeNode == null) ? Set.of() : Set.of(scopeNode.trim().split("\\s+"));
+            Set<String> scopes = scopeNode == null ? Set.of() : Set.of(scopeNode.trim().split("\\s+"));
             return new AccessTokenResponse(tokenValue, scopes, expiry);
         } catch (OAuth2ClientException e) {
             throw e;
@@ -447,11 +450,11 @@ public final class OAuth2Handler {
     }
 
     private static String logBody(String body) {
-        return (body == null || body.isEmpty()) ? "<none>" : body;
+        return body == null || body.isEmpty() ? "<none>" : body;
     }
 
     private static String logNonce(String nonce) {
-        return (nonce == null || nonce.isEmpty()) ? "<none>" : nonce;
+        return nonce == null || nonce.isEmpty() ? "<none>" : nonce;
     }
 
     private record AccessTokenResult<Response>(AccessToken accessToken, Response errorResponse) {

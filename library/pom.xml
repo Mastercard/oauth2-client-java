@@ -38,12 +38,16 @@
 
 
     <properties>
-        <!-- Latest versions supported (as of March 2026) -->
-        <okhttp.version>5.3.2</okhttp.version>
-        <httpclient.version>5.6</httpclient.version>
-        <feign.version>13.9.3</feign.version>
-        <spring-web.version>7.0.5</spring-web.version>
-        <spring-webflux.version>7.0.5</spring-webflux.version>
+        <!-- Latest client versions supported (as of July 2026) -->
+        <okhttp.version>5.4.0</okhttp.version>
+        <httpclient.version>5.6.2</httpclient.version>
+        <feign.version>13.13</feign.version>
+        <spring-web.version>7.0.8</spring-web.version>
+        <spring-webflux.version>7.0.8</spring-webflux.version>
+
+        <!-- Test dependencies -->
+        <junit.version>6.1.1</junit.version>
+        <wiremock.version>4.0.0-beta.38</wiremock.version>
     </properties>
 
     <dependencies>
@@ -96,28 +100,28 @@
             <!-- JSON provider, option #1 -->
             <groupId>tools.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>3.1.0</version>
+            <version>3.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <!-- JSON provider, option #2 -->
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.13.2</version>
+            <version>2.14.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <!-- JSON provider, option #3 -->
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20251224</version>
+            <version>20260522</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <!-- Logging -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>2.0.17</version>
+            <version>2.0.18</version>
         </dependency>
         <!-- ~~~~~~~~~~~~~~~~~ -->
         <!-- Test dependencies -->
@@ -133,14 +137,20 @@
             <!-- JWT validation for tests -->
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>10.6</version>
+            <version>10.9.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <!-- Fake authorization and resource server -->
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock</artifactId>
-            <version>4.0.0-beta.17</version>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-junit5</artifactId>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -154,25 +164,37 @@
             <!-- Logger implementation for tests -->
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.5.24</version>
+            <version>1.5.37</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>6.0.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>6.0.1</version>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-commons</artifactId>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.20.0</version>
+            <version>5.23.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -184,10 +206,9 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.83</version>
+            <version>1.84</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -199,6 +220,11 @@
                 <configuration>
                     <release>17</release>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.6</version>
             </plugin>
             <plugin>
                 <!-- Flatten POM for Maven Central deployment (no parent reference) -->
@@ -253,7 +279,7 @@
                 <!-- Code style -->
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.8.0</version>
                 <configuration>
                     <formats>
                         <format>
@@ -262,8 +288,8 @@
                             </includes>
                             <prettier>
                                 <devDependencies>
-                                    <prettier>3.8.0</prettier>
-                                    <prettier-plugin-java>2.8.1</prettier-plugin-java>
+                                    <prettier>3.9.5</prettier>
+                                    <prettier-plugin-java>2.10.2</prettier-plugin-java>
                                 </devDependencies>
                                 <config>
                                     <parser>java</parser>
@@ -282,7 +308,7 @@
                 <!-- JaCoCo code coverage -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.14</version>
+                <version>0.8.15</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>

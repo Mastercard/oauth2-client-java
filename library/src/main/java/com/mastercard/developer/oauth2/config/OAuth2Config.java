@@ -332,18 +332,18 @@ public class OAuth2Config {
           dpopKeyProvider='%s',
           securityProfile='%s'
         }""".formatted(
-                clientId,
-                tokenEndpoint,
-                issuer,
-                clockSkewTolerance,
-                userAgent,
-                formatName(accessTokenStore),
-                formatName(scopeResolver),
-                kid,
-                formatPrivateKey(clientKey),
-                formatName(dpopKeyProvider),
-                securityProfile
-            );
+            clientId,
+            tokenEndpoint,
+            issuer,
+            clockSkewTolerance,
+            userAgent,
+            formatName(accessTokenStore),
+            formatName(scopeResolver),
+            kid,
+            formatPrivateKey(clientKey),
+            formatName(dpopKeyProvider),
+            securityProfile
+        );
     }
 
     private static String formatPrivateKey(PrivateKey key) {

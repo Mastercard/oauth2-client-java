@@ -17,7 +17,7 @@ public record AccessToken(String clientId, Set<String> scopes, Instant expiresAt
      * Creates a new access token
      */
     public AccessToken {
-        scopes = (null == scopes) ? Set.of() : Set.copyOf(scopes);
+        scopes = null == scopes ? Set.of() : Set.copyOf(scopes);
     }
 
     /**

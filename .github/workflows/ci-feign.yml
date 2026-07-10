@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         java-version: [ '17' ]
-        feign-version: [ '11.10', '12.5', '13.9.3' ]
+        feign-version: [ '11.10', '12.5', '13.13' ]
     name: v${{ matrix.feign-version }}
     env:
       OKHTTP: 'com.squareup.okhttp3:okhttp,com.squareup.okhttp3:logging-interceptor'

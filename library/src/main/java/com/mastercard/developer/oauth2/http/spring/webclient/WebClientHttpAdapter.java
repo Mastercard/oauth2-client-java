@@ -26,14 +26,12 @@ record WebClientHttpAdapter(WebClient delegate) implements ReactiveOAuth2Handler
     Mono<MaterializedResponse> sendAccessTokenRequestReactive(URL tokenUrl, String formBody, HttpHeaders headers) {
         var requestSpec = delegate.post().uri(tokenUrl.toString());
         headers.forEach(header -> requestSpec.header(header.name(), header.value()));
-        return requestSpec
-            .bodyValue(formBody)
-            .exchangeToMono(response ->
-                response
-                    .bodyToMono(String.class)
-                    .defaultIfEmpty("")
-                    .map(body -> new MaterializedResponse(response.statusCode().value(), response.headers().asHttpHeaders(), body))
-            );
+        return requestSpec.bodyValue(formBody).exchangeToMono(response ->
+            response
+                .bodyToMono(String.class)
+                .defaultIfEmpty("")
+                .map(body -> new MaterializedResponse(response.statusCode().value(), response.headers().asHttpHeaders(), body))
+        );
     }
 
     Mono<MaterializedResponse> sendResourceRequestReactive(ReactiveRequestContext request, HttpHeaders headers) {

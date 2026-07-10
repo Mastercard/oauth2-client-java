@@ -212,15 +212,13 @@ class OAuth2HandlerExecuteTest extends BaseTest {
         verifyTokenRequestHeaders(tokenRequestHeaders.get(1), authorizationServerNonce);
 
         // Verify the access token request form bodies
-        tokenRequestBodyCaptor
-            .getAllValues()
-            .forEach(body -> {
-                assertTrue(body.contains("client_id=" + sampleClientId));
-                assertTrue(body.contains("grant_type=client_credentials"));
-                assertTrue(body.contains("scope=service%3Ascope1+service%3Ascope2"));
-                assertTrue(body.contains("client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer"));
-                assertTrue(body.contains("client_assertion="));
-            });
+        tokenRequestBodyCaptor.getAllValues().forEach(body -> {
+            assertTrue(body.contains("client_id=" + sampleClientId));
+            assertTrue(body.contains("grant_type=client_credentials"));
+            assertTrue(body.contains("scope=service%3Ascope1+service%3Ascope2"));
+            assertTrue(body.contains("client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer"));
+            assertTrue(body.contains("client_assertion="));
+        });
 
         // Verify client assertions are not reused across requests
         var clientAssertions = tokenRequestBodyCaptor.getAllValues().stream().map(OAuth2HandlerExecuteTest::extractClientAssertion).toList();

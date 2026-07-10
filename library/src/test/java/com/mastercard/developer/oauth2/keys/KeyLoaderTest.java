@@ -15,16 +15,14 @@ import org.junit.jupiter.params.provider.CsvSource;
 class KeyLoaderTest {
 
     @ParameterizedTest
-    @CsvSource(
-        {
-            "pkcs8/test_key_pkcs8-2048.der",
-            "pkcs8/test_key_pkcs8-4096.der",
-            "pkcs8/test_key_pkcs8-2048.pem",
-            "pkcs8/test_key_pkcs8-4096.pem",
-            "pkcs1/test_key_pkcs1-2048.pem",
-            "pkcs1/test_key_pkcs1-4096.pem",
-        }
-    )
+    @CsvSource({
+        "pkcs8/test_key_pkcs8-2048.der",
+        "pkcs8/test_key_pkcs8-4096.der",
+        "pkcs8/test_key_pkcs8-2048.pem",
+        "pkcs8/test_key_pkcs8-4096.pem",
+        "pkcs1/test_key_pkcs1-2048.pem",
+        "pkcs1/test_key_pkcs1-4096.pem",
+    })
     void loadPrivateKey_ShouldLoadKeyFromFile(String keyFilePath) throws Exception {
         // GIVEN
         var keyPath = Paths.get("./src/test/resources/keys", keyFilePath);
@@ -38,16 +36,14 @@ class KeyLoaderTest {
     }
 
     @ParameterizedTest
-    @CsvSource(
-        {
-            "pkcs8/test_key_pkcs8-2048.der",
-            "pkcs8/test_key_pkcs8-4096.der",
-            "pkcs8/test_key_pkcs8-2048.pem",
-            "pkcs8/test_key_pkcs8-4096.pem",
-            "pkcs1/test_key_pkcs1-2048.pem",
-            "pkcs1/test_key_pkcs1-4096.pem",
-        }
-    )
+    @CsvSource({
+        "pkcs8/test_key_pkcs8-2048.der",
+        "pkcs8/test_key_pkcs8-4096.der",
+        "pkcs8/test_key_pkcs8-2048.pem",
+        "pkcs8/test_key_pkcs8-4096.pem",
+        "pkcs1/test_key_pkcs1-2048.pem",
+        "pkcs1/test_key_pkcs1-4096.pem",
+    })
     void loadPrivateKey_ShouldLoadKeyFromStream(String keyFilePath) throws Exception {
         // GIVEN
         var keyStream = Files.newInputStream(Paths.get(String.format("./src/test/resources/keys/%s", keyFilePath)));

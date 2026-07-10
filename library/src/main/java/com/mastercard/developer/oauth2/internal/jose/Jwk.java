@@ -150,8 +150,9 @@ public final class Jwk extends ConcurrentHashMap<String, String> {
             String e = get("e");
             String n = get("n");
             canonical = """
-                {"e":"%s","kty":"RSA","n":"%s"}
-                """.formatted(e, n)
+            {"e":"%s","kty":"RSA","n":"%s"}
+            """
+                .formatted(e, n)
                 .strip();
         } else if ("EC".equals(kty)) {
             // Order: crv, kty, x, y
@@ -159,8 +160,9 @@ public final class Jwk extends ConcurrentHashMap<String, String> {
             String x = get("x");
             String y = get("y");
             canonical = """
-                {"crv":"%s","kty":"EC","x":"%s","y":"%s"}
-                """.formatted(crv, x, y)
+            {"crv":"%s","kty":"EC","x":"%s","y":"%s"}
+            """
+                .formatted(crv, x, y)
                 .strip();
         } else {
             throw new IllegalStateException("Unsupported key type: " + kty);

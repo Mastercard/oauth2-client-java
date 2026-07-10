@@ -151,6 +151,9 @@ public final class KeyLoader {
     }
 
     private static byte[] concat(byte[] array1, byte[] array2) {
-        return ByteBuffer.allocate(array1.length + array2.length).put(array1).put(array2).array();
+        return ByteBuffer.allocate(array1.length + array2.length)
+            .put(array1)
+            .put(array2)
+            .array();
     }
 }

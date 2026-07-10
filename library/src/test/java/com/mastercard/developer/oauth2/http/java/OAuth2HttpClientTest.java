@@ -452,10 +452,17 @@ class OAuth2HttpClientTest extends BaseClientTest {
     }
 
     private static HttpRequest createGetRequest(TestConfig testConfig, String resourceId) throws URISyntaxException {
-        return withDummyHeaders().uri(new URI(testConfig.getFetchResourceUri(resourceId))).header(ACCEPT.value(), "application/json").GET().build();
+        return withDummyHeaders()
+            .uri(new URI(testConfig.getFetchResourceUri(resourceId)))
+            .header(ACCEPT.value(), "application/json")
+            .GET()
+            .build();
     }
 
     private static HttpRequest createDeleteRequest(TestConfig testConfig, String resourceId) throws URISyntaxException {
-        return withDummyHeaders().uri(new URI(testConfig.getDeleteResourceUri(resourceId))).DELETE().build();
+        return withDummyHeaders()
+            .uri(new URI(testConfig.getDeleteResourceUri(resourceId)))
+            .DELETE()
+            .build();
     }
 }
