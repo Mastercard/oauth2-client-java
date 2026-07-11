@@ -12,7 +12,7 @@
     <packaging>jar</packaging>
 
     <properties>
-        <openapi-generator.version>7.20.0</openapi-generator.version>
+        <openapi-generator.version>7.23.0</openapi-generator.version>
         <use-jakarta-ee>true</use-jakarta-ee>
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <!-- OpenAPI Generator with "okhttp-gson" -->
@@ -21,7 +21,7 @@
         <okhttp-version>4.12.0</okhttp-version>
         <gson-version>2.10.1</gson-version>
         <commons-lang3-version>3.18.0</commons-lang3-version>
-        <jackson-databind-nullable-version>0.2.9</jackson-databind-nullable-version>
+        <jackson-databind-nullable-version>0.2.10</jackson-databind-nullable-version>
         <jakarta.ws.rs-api-version>2.1.6</jakarta.ws.rs-api-version>
 
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
@@ -37,16 +37,15 @@
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <!-- OpenAPI Generator with "restclient" -->
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-        <spring-web-version>6.2.13</spring-web-version>
+        <spring-web-version>6.2.16</spring-web-version>
         <jackson-version>2.21.1</jackson-version>
         <jackson-annotations-version>2.21</jackson-annotations-version>
-        <jackson-databind-version>2.21.1</jackson-databind-version>
         <jakarta-annotation-version>2.1.1</jakarta-annotation-version>
 
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <!-- OpenAPI Generator with "webclient" -->
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-        <spring-boot-version>3.5.7</spring-boot-version>
+        <spring-boot-version>3.5.11</spring-boot-version>
 
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <!-- OpenAPI Generator with "apache-httpclient" -->
@@ -154,11 +153,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-annotations-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson-databind-version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.jakarta.rs</groupId>
