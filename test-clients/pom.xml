@@ -50,7 +50,7 @@
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
         <!-- OpenAPI Generator with "apache-httpclient" -->
         <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-        <httpclient-version>5.5.2</httpclient-version>
+        <httpclient-version>5.6.3</httpclient-version>
     </properties>
 
     <dependencies>
