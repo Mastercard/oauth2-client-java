@@ -24,22 +24,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("resource") // On JDK 11–20, java.net.http.HttpClient does not implement AutoCloseable
 class OAuth2HttpClientTest extends BaseHttpClientTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        System.setProperty("jdk.httpclient.HttpClient.log", "all");
-    }
-
-    @AfterAll
-    static void afterAll() {
-        System.clearProperty("jdk.httpclient.HttpClient.log");
-    }
 
     private static HttpClient.Builder httpClient(TestConfig testConfig) {
         HttpClient.Builder baseBuilder = HttpClient.newBuilder();

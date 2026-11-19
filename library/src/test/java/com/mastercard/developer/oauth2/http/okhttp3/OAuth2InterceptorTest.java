@@ -15,15 +15,12 @@ import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.Dog
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.NewDog;
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.PetStatus;
 import okhttp3.*;
-import okhttp3.logging.HttpLoggingInterceptor;
 import org.junit.jupiter.api.Test;
 
 class OAuth2InterceptorTest extends BaseHttpClientTest {
 
     private static OkHttpClient clientWithInterceptors(TestConfig testConfig) {
-        var loggingInterceptor = new HttpLoggingInterceptor(System.out::println);
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient baseClient = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
+        OkHttpClient baseClient = new OkHttpClient.Builder().build();
         return baseClient.newBuilder().addInterceptor(new OAuth2Interceptor(testConfig.getOAuth2Config(), baseClient.newBuilder())).build();
     }
 

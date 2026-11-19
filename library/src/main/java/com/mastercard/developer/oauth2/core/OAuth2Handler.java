@@ -112,7 +112,7 @@ public final class OAuth2Handler {
         Optional<AccessToken> existingToken = tokenStore.get(filter);
         if (existingToken.isPresent()) {
             AccessToken accessToken = existingToken.get();
-            logger.debug("Valid access token found: {}", accessToken);
+            logger.debug("Valid access token found (expires at {}, {} scopes)", accessToken.expiresAt(), accessToken.scopes().size());
             return AccessTokenResult.from(accessToken);
         }
 
@@ -140,7 +140,7 @@ public final class OAuth2Handler {
         adapter.close(tokenResponse);
         AccessTokenResponse accessTokenResponse = parseAccessTokenJson(body);
         var accessToken = new AccessToken(config.getClientId(), accessTokenResponse.scopes(), accessTokenResponse.expiry(), jkt, accessTokenResponse.tokenValue());
-        logger.debug("Adding access token to store: {}", accessToken);
+        logger.debug("Adding access token to store (expires at {}, {} scopes)", accessToken.expiresAt(), accessToken.scopes().size());
         tokenStore.put(accessToken);
         return AccessTokenResult.from(accessToken);
     }
@@ -153,13 +153,13 @@ public final class OAuth2Handler {
             logger.debug("Creating token request DPoP proof (nonce: {})", logNonce(nonce));
         }
         String dpopProof = createTokenRequestDPoP(config, dpopKeyId, nonce);
-        logger.debug("Token request DPoP proof: {}", dpopProof);
+        logger.debug("Token request DPoP proof: <redacted>");
         var scope = String.join(" ", scopes);
         logger.debug("Creating client assertion");
         String clientAssertion = createClientAssertion(config);
-        logger.debug("Client assertion: {}", clientAssertion);
+        logger.debug("Client assertion: <redacted>");
         String formBody = createAccessTokenRequestBody(clientId, scope, clientAssertion);
-        logger.debug("Sending access token request with body: {}", formBody);
+        logger.debug("Sending access token request with body: <redacted>");
         var headers = new HttpHeaders()
             .add(USER_AGENT, config.getUserAgent())
             .add(CONTENT_TYPE, "application/x-www-form-urlencoded")
@@ -201,7 +201,7 @@ public final class OAuth2Handler {
             logger.debug("Creating resource request DPoP proof (nonce: {})", logNonce(nonce));
         }
         String dpopProof = createResourceRequestDPoP(config, dpopKeyId, method, resourceUrl, accessToken, nonce);
-        logger.debug("Resource request DPoP proof: {}", dpopProof);
+        logger.debug("Resource request DPoP proof: <redacted>");
         var headers = new HttpHeaders()
             .add(USER_AGENT, config.getUserAgent())
             .add(AUTHORIZATION, "DPoP " + accessToken)
@@ -450,7 +450,7 @@ public final class OAuth2Handler {
     }
 
     private static String logBody(String body) {
-        return body == null || body.isEmpty() ? "<none>" : body;
+        return body == null || body.isEmpty() ? "<none>" : "<redacted>";
     }
 
     private static String logNonce(String nonce) {
