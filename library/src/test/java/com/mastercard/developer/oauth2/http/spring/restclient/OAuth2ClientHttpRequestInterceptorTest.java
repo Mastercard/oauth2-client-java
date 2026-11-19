@@ -1,10 +1,11 @@
 package com.mastercard.developer.oauth2.http.spring.restclient;
 
 import static com.mastercard.developer.oauth2.http.StandardHttpHeader.*;
+import static com.mastercard.developer.oauth2.test.fixtures.LiveResourceRetry.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONAssert.*;
 
-import com.mastercard.developer.oauth2.test.fixtures.BaseClientTest;
+import com.mastercard.developer.oauth2.test.fixtures.BaseHttpClientTest;
 import com.mastercard.developer.oauth2.test.fixtures.TestConfig;
 import com.mastercard.developer.test.openapi_generator.fake.restclient.api.ResourcesApi;
 import com.mastercard.developer.test.openapi_generator.fake.restclient.model.Resource;
@@ -16,28 +17,23 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-class OAuth2ClientHttpRequestInterceptorTest extends BaseClientTest {
+class OAuth2ClientHttpRequestInterceptorTest extends BaseHttpClientTest {
 
     private static RestClient clientWithInterceptor(TestConfig testConfig) {
         var interceptor = new OAuth2ClientHttpRequestInterceptor(testConfig.getOAuth2Config());
         return RestClient.builder().requestInterceptor(interceptor).build();
     }
 
-    @ParameterizedTest
-    @MethodSource("testConfigProvider")
-    void client_ShouldSucceed(Supplier<TestConfig> configSupplier) throws Exception {
+    @Override
+    protected void clientShouldSucceed(TestConfig testConfig, boolean retryOn404) throws Exception {
         // GIVEN
-        TestConfig testConfig = configSupplier.get();
         RestClient restClient = clientWithInterceptor(testConfig);
 
         // WHEN: create resource
@@ -51,14 +47,16 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseClientTest {
         var resourceId = readResourceId(resource);
 
         // WHEN: fetch resource
-        resource = createGetSpec(restClient, testConfig, resourceId).retrieve().body(String.class);
+        resource = onNotFound(retryOn404, "GET", () -> createGetSpec(restClient, testConfig, resourceId).retrieve().body(String.class),
+            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
 
         // THEN
         assertNotNull(resource);
         assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        ResponseEntity<Void> entity = createDeleteSpec(restClient, testConfig, resourceId).retrieve().toBodilessEntity();
+        ResponseEntity<Void> entity = onNotFound(retryOn404, "DELETE", () -> createDeleteSpec(restClient, testConfig, resourceId).retrieve().toBodilessEntity(),
+            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
 
         // THEN
         assertEquals(HttpStatusCode.valueOf(204), entity.getStatusCode()); // Resource deleted
@@ -90,7 +88,7 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseClientTest {
     }
 
     @Test
-    void openapiGeneratorClient_ShouldSucceed_WhenMastercardApi() {
+    void openapiGeneratorClient_ShouldSucceed_WhenMastercardApi() throws Exception {
         // GIVEN
         TestConfig testConfig = getMastercardConfig();
         RestClient restClient = clientWithInterceptor(testConfig);
@@ -112,13 +110,17 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseClientTest {
         assertNotNull(dog.getId());
 
         // WHEN: fetch resource
-        dog = api.getDog(dog.getId());
+        var dogId = dog.getId();
+        dog = onNotFound("GET", () -> api.getDog(dogId), error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
         // THEN
         assertNotNull(dog);
         assertNotNull(dog.getId());
 
         // WHEN / THEN: delete resource
-        api.deleteDog(dog.getId());
+        onNotFound("DELETE", () -> {
+            api.deleteDog(dogId);
+            return null;
+        }, error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
     }
 
     @Test
