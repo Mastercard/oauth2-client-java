@@ -47,16 +47,24 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseHttpClientTest {
         var resourceId = readResourceId(resource);
 
         // WHEN: fetch resource
-        resource = onNotFound(retryOn404, "GET", () -> createGetSpec(restClient, testConfig, resourceId).retrieve().body(String.class),
-            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
+        resource = onNotFound(
+            retryOn404,
+            "GET",
+            () -> createGetSpec(restClient, testConfig, resourceId).retrieve().body(String.class),
+            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404
+        );
 
         // THEN
         assertNotNull(resource);
         assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        ResponseEntity<Void> entity = onNotFound(retryOn404, "DELETE", () -> createDeleteSpec(restClient, testConfig, resourceId).retrieve().toBodilessEntity(),
-            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
+        ResponseEntity<Void> entity = onNotFound(
+            retryOn404,
+            "DELETE",
+            () -> createDeleteSpec(restClient, testConfig, resourceId).retrieve().toBodilessEntity(),
+            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404
+        );
 
         // THEN
         assertEquals(HttpStatusCode.valueOf(204), entity.getStatusCode()); // Resource deleted
@@ -117,10 +125,14 @@ class OAuth2ClientHttpRequestInterceptorTest extends BaseHttpClientTest {
         assertNotNull(dog.getId());
 
         // WHEN / THEN: delete resource
-        onNotFound("DELETE", () -> {
-            api.deleteDog(dogId);
-            return null;
-        }, error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404);
+        onNotFound(
+            "DELETE",
+            () -> {
+                api.deleteDog(dogId);
+                return null;
+            },
+            error -> error instanceof HttpClientErrorException ex && ex.getStatusCode().value() == 404
+        );
     }
 
     @Test

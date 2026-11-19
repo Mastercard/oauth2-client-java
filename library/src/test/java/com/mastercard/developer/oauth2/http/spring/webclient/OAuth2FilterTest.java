@@ -51,15 +51,23 @@ class OAuth2FilterTest extends BaseHttpClientTest {
         var resourceId = readResourceId(resource);
 
         // WHEN: fetch resource
-        resource = onNotFound(retryOn404, "GET", () -> createGetSpec(webClient, testConfig, resourceId).retrieve().bodyToMono(String.class).block(),
-            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
+        resource = onNotFound(
+            retryOn404,
+            "GET",
+            () -> createGetSpec(webClient, testConfig, resourceId).retrieve().bodyToMono(String.class).block(),
+            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404
+        );
         // THEN
         assertNotNull(resource);
         assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        ResponseEntity<Void> entity = onNotFound(retryOn404, "DELETE", () -> createDeleteSpec(webClient, testConfig, resourceId).retrieve().toBodilessEntity().block(),
-            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
+        ResponseEntity<Void> entity = onNotFound(
+            retryOn404,
+            "DELETE",
+            () -> createDeleteSpec(webClient, testConfig, resourceId).retrieve().toBodilessEntity().block(),
+            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404
+        );
         // THEN
         assertNotNull(entity);
         assertEquals(HttpStatusCode.valueOf(204), entity.getStatusCode()); // Resource deleted
@@ -114,15 +122,13 @@ class OAuth2FilterTest extends BaseHttpClientTest {
 
             // WHEN: fetch resource
             var dogId = dog.getId();
-            dog = onNotFound("GET", () -> api.getDog(dogId).block(),
-                error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
+            dog = onNotFound("GET", () -> api.getDog(dogId).block(), error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
             // THEN
             assertNotNull(dog);
             assertNotNull(dog.getId());
 
             // WHEN / THEN: delete resource
-            onNotFound("DELETE", () -> api.deleteDog(dogId).block(),
-                error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
+            onNotFound("DELETE", () -> api.deleteDog(dogId).block(), error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
         }
     }
 

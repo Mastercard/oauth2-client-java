@@ -29,10 +29,19 @@ class LiveResourceRetryTest {
         var attempts = new AtomicInteger();
         var error = new IOException("Other failure");
 
-        assertSame(error, assertThrows(IOException.class, () -> onNotFound("GET", () -> {
-            attempts.incrementAndGet();
-            throw error;
-        }, exception -> false)));
+        assertSame(
+            error,
+            assertThrows(IOException.class, () ->
+                onNotFound(
+                    "GET",
+                    () -> {
+                        attempts.incrementAndGet();
+                        throw error;
+                    },
+                    exception -> false
+                )
+            )
+        );
         assertEquals(1, attempts.get());
     }
 
@@ -41,10 +50,19 @@ class LiveResourceRetryTest {
         var attempts = new AtomicInteger();
         var error = new IOException("HTTP 404");
 
-        assertSame(error, assertThrows(IOException.class, () -> onNotFound("DELETE", () -> {
-            attempts.incrementAndGet();
-            throw error;
-        }, exception -> exception == error)));
+        assertSame(
+            error,
+            assertThrows(IOException.class, () ->
+                onNotFound(
+                    "DELETE",
+                    () -> {
+                        attempts.incrementAndGet();
+                        throw error;
+                    },
+                    exception -> exception == error
+                )
+            )
+        );
         assertEquals(10, attempts.get());
     }
 }

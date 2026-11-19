@@ -122,10 +122,14 @@ class OAuth2ClientTest extends BaseHttpClientTest {
         assertNotNull(dog.getId());
 
         // WHEN / THEN: delete resource
-        onNotFound("DELETE", () -> {
-            api.deleteDog(dogId);
-            return null;
-        }, error -> error instanceof FeignException ex && ex.status() == 404);
+        onNotFound(
+            "DELETE",
+            () -> {
+                api.deleteDog(dogId);
+                return null;
+            },
+            error -> error instanceof FeignException ex && ex.status() == 404
+        );
     }
 
     @Test

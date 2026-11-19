@@ -126,10 +126,14 @@ class OAuth2InterceptorTest extends BaseHttpClientTest {
         assertNotNull(dog.getId());
 
         // WHEN / THEN: delete resource
-        onNotFound("DELETE", () -> {
-            api.deleteDog(dogId);
-            return null;
-        }, error -> error instanceof ApiException ex && ex.getCode() == 404);
+        onNotFound(
+            "DELETE",
+            () -> {
+                api.deleteDog(dogId);
+                return null;
+            },
+            error -> error instanceof ApiException ex && ex.getCode() == 404
+        );
     }
 
     @Test
