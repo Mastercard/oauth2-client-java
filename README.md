@@ -293,12 +293,10 @@ Running integration tests against a real Mastercard API requires API details and
 
 #### GitHub Actions
 
-This repository is configured with the following secrets GitHub Actions automatically uses when running [workflows](https://github.com/mastercard/oauth2-client-java/actions):
+- Branches and pull requests run Java tests against fake servers, without sandbox credentials.
+- `main` also runs live tests. If a required credential is missing, the job fails.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./res/secrets-dark.svg">
-  <img src="./res/secrets-light.svg" alt="Configured secrets">
-</picture>
+**Maintainers:** Keep sandbox credentials only in a `main`-restricted environment, not in repository or organization secrets accessible to this repo.
 
 ### Fake Servers
 

@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    environment: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'sandbox' || 'ci' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -40,7 +41,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build and run tests with Java ${{ matrix.java-version }}
-        run: mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.java.OAuth2HttpClientTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }},${{ env.SPRING_WEB }},${{ env.SPRING_WEBFLUX }}"
+        run: bash .github/check-sandbox-credentials.sh && mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.java.OAuth2HttpClientTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }},${{ env.SPRING_WEB }},${{ env.SPRING_WEBFLUX }}"
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           KID: ${{ secrets.KID }}

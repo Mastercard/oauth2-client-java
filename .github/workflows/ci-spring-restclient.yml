@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    environment: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'sandbox' || 'ci' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -41,7 +42,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build and run tests with spring-web ${{ matrix.spring-web-version }}
-        run: mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.spring.restclient.OAuth2ClientHttpRequestInterceptorTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dspring-web.version=${{ matrix.spring-web-version }}" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }},${{ env.SPRING_WEBFLUX }}"
+        run: bash .github/check-sandbox-credentials.sh && mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.spring.restclient.OAuth2ClientHttpRequestInterceptorTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dspring-web.version=${{ matrix.spring-web-version }}" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }},${{ env.SPRING_WEBFLUX }}"
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           KID: ${{ secrets.KID }}

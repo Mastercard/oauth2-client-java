@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    environment: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'sandbox' || 'ci' }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -51,7 +52,7 @@ jobs:
           fi
 
       - name: Build and run tests with spring-webflux ${{ matrix.spring-webflux-version }}
-        run: mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.spring.webclient.OAuth2FilterTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dspring-webflux.version=${{ matrix.spring-webflux-version }}" "-Dspring-web.version=${{ matrix.spring-webflux-version }}" "-Duse-jakarta-ee=${{ steps.set-jakarta.outputs.use-jakarta-ee }}" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }}"
+        run: bash .github/check-sandbox-credentials.sh && mvn -B test "-Dtest=com.mastercard.developer.oauth2.http.spring.webclient.OAuth2FilterTest" "-Dsurefire.failIfNoSpecifiedTests=false" "-Dspring-webflux.version=${{ matrix.spring-webflux-version }}" "-Dspring-web.version=${{ matrix.spring-webflux-version }}" "-Duse-jakarta-ee=${{ steps.set-jakarta.outputs.use-jakarta-ee }}" "-Dmaven.test.dependency.excludes=${{ env.OKHTTP }},${{ env.FEIGN }}"
         env:
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           KID: ${{ secrets.KID }}
