@@ -1,38 +1,32 @@
 package com.mastercard.developer.oauth2.http.okhttp3;
 
 import static com.mastercard.developer.oauth2.http.StandardHttpHeader.*;
+import static com.mastercard.developer.oauth2.test.fixtures.LiveResourceRetry.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONAssert.*;
 
-import com.mastercard.developer.oauth2.test.fixtures.BaseClientTest;
+import com.mastercard.developer.oauth2.test.fixtures.BaseHttpClientTest;
 import com.mastercard.developer.oauth2.test.fixtures.TestConfig;
 import com.mastercard.developer.test.openapi_generator.fake.okhttp.api.ResourcesApi;
 import com.mastercard.developer.test.openapi_generator.fake.okhttp.model.Resource;
+import com.mastercard.developer.test.openapi_generator.petstore.okhttp.ApiException;
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.api.PetsApi;
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.Dog;
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.NewDog;
 import com.mastercard.developer.test.openapi_generator.petstore.okhttp.model.PetStatus;
-import java.util.function.Supplier;
 import okhttp3.*;
-import okhttp3.logging.HttpLoggingInterceptor;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
-class OAuth2InterceptorTest extends BaseClientTest {
+class OAuth2InterceptorTest extends BaseHttpClientTest {
 
     private static OkHttpClient clientWithInterceptors(TestConfig testConfig) {
-        var loggingInterceptor = new HttpLoggingInterceptor(System.out::println);
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        OkHttpClient baseClient = new OkHttpClient.Builder().addInterceptor(loggingInterceptor).build();
+        OkHttpClient baseClient = new OkHttpClient.Builder().build();
         return baseClient.newBuilder().addInterceptor(new OAuth2Interceptor(testConfig.getOAuth2Config(), baseClient.newBuilder())).build();
     }
 
-    @ParameterizedTest
-    @MethodSource("testConfigProvider")
-    void client_ShouldSucceed(Supplier<TestConfig> configSupplier) throws Exception {
+    @Override
+    protected void clientShouldSucceed(TestConfig testConfig, boolean retryOn404) throws Exception {
         // GIVEN
-        TestConfig testConfig = configSupplier.get();
         OkHttpClient httpClient = clientWithInterceptors(testConfig);
 
         // WHEN: create resource
@@ -49,23 +43,30 @@ class OAuth2InterceptorTest extends BaseClientTest {
         }
 
         // WHEN: fetch resource
-        Request getRequest = createGetRequest(testConfig, resourceId);
-        Call getCall = httpClient.newCall(getRequest);
-        try (Response response = getCall.execute()) {
-            // THEN
-            assertEquals(200, response.code());
-            assertNotNull(response.body());
-            String resource = response.body().string();
-            assertTrue(resource.contains("id")); // Resource fetched
-        }
+        String resource = onNotFound(retryOn404, "GET", () -> {
+            Request getRequest = createGetRequest(testConfig, resourceId);
+            try (Response response = httpClient.newCall(getRequest).execute()) {
+                if (retryOn404) {
+                    failIfNotFound(response.code());
+                }
+                assertEquals(200, response.code());
+                assertNotNull(response.body());
+                return response.body().string();
+            }
+        });
+        assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        Request deleteRequest = createDeleteRequest(testConfig, resourceId);
-        Call deleteCall = httpClient.newCall(deleteRequest);
-        try (Response response = deleteCall.execute()) {
-            // THEN
-            assertEquals(204, response.code()); // Resource deleted
-        }
+        onNotFound(retryOn404, "DELETE", () -> {
+            Request deleteRequest = createDeleteRequest(testConfig, resourceId);
+            try (Response response = httpClient.newCall(deleteRequest).execute()) {
+                if (retryOn404) {
+                    failIfNotFound(response.code());
+                }
+                assertEquals(204, response.code()); // Resource deleted
+                return null;
+            }
+        });
     }
 
     @Test
@@ -115,13 +116,21 @@ class OAuth2InterceptorTest extends BaseClientTest {
         assertNotNull(dog.getId());
 
         // WHEN: fetch resource
-        dog = api.getDog(dog.getId());
+        var dogId = dog.getId();
+        dog = onNotFound("GET", () -> api.getDog(dogId), error -> error instanceof ApiException ex && ex.getCode() == 404);
         // THEN
         assertNotNull(dog);
         assertNotNull(dog.getId());
 
         // WHEN / THEN: delete resource
-        api.deleteDog(dog.getId());
+        onNotFound(
+            "DELETE",
+            () -> {
+                api.deleteDog(dogId);
+                return null;
+            },
+            error -> error instanceof ApiException ex && ex.getCode() == 404
+        );
     }
 
     @Test

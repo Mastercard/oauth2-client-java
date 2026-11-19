@@ -31,16 +31,6 @@ class OAuth2HandlerEndToEndTest extends BaseClientTest {
         httpClient = HttpClient.newBuilder().build();
     }
 
-    @BeforeAll
-    static void beforeAll() {
-        System.setProperty("jdk.httpclient.HttpClient.log", "all");
-    }
-
-    @AfterAll
-    static void afterAll() {
-        System.clearProperty("jdk.httpclient.HttpClient.log");
-    }
-
     @ParameterizedTest
     @MethodSource("serverAndKeyProvider")
     void callSequence_ShouldSucceed(Supplier<TestConfig> configSupplier) throws Exception {

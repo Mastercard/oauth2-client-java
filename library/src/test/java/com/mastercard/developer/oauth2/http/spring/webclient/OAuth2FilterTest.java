@@ -1,10 +1,11 @@
 package com.mastercard.developer.oauth2.http.spring.webclient;
 
 import static com.mastercard.developer.oauth2.http.StandardHttpHeader.*;
+import static com.mastercard.developer.oauth2.test.fixtures.LiveResourceRetry.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONAssert.*;
 
-import com.mastercard.developer.oauth2.test.fixtures.BaseClientTest;
+import com.mastercard.developer.oauth2.test.fixtures.BaseHttpClientTest;
 import com.mastercard.developer.oauth2.test.fixtures.TestConfig;
 import com.mastercard.developer.test.openapi_generator.fake.webclient.api.ResourcesApi;
 import com.mastercard.developer.test.openapi_generator.fake.webclient.model.Resource;
@@ -16,10 +17,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +25,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 
-class OAuth2FilterTest extends BaseClientTest {
+class OAuth2FilterTest extends BaseHttpClientTest {
 
     private static WebClient clientWithFilter(TestConfig testConfig) {
         WebClient.Builder baseBuilder = WebClient.builder();
@@ -35,11 +33,9 @@ class OAuth2FilterTest extends BaseClientTest {
         return baseBuilder.filter(filter).build();
     }
 
-    @ParameterizedTest
-    @MethodSource("testConfigProvider")
-    void client_ShouldSucceed(Supplier<TestConfig> configSupplier) throws Exception {
+    @Override
+    protected void clientShouldSucceed(TestConfig testConfig, boolean retryOn404) throws Exception {
         // GIVEN
-        TestConfig testConfig = configSupplier.get();
         WebClient webClient = clientWithFilter(testConfig);
 
         // WHEN: create resource
@@ -55,13 +51,23 @@ class OAuth2FilterTest extends BaseClientTest {
         var resourceId = readResourceId(resource);
 
         // WHEN: fetch resource
-        resource = createGetSpec(webClient, testConfig, resourceId).retrieve().bodyToMono(String.class).block();
+        resource = onNotFound(
+            retryOn404,
+            "GET",
+            () -> createGetSpec(webClient, testConfig, resourceId).retrieve().bodyToMono(String.class).block(),
+            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404
+        );
         // THEN
         assertNotNull(resource);
         assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        ResponseEntity<Void> entity = createDeleteSpec(webClient, testConfig, resourceId).retrieve().toBodilessEntity().block();
+        ResponseEntity<Void> entity = onNotFound(
+            retryOn404,
+            "DELETE",
+            () -> createDeleteSpec(webClient, testConfig, resourceId).retrieve().toBodilessEntity().block(),
+            error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404
+        );
         // THEN
         assertNotNull(entity);
         assertEquals(HttpStatusCode.valueOf(204), entity.getStatusCode()); // Resource deleted
@@ -93,7 +99,7 @@ class OAuth2FilterTest extends BaseClientTest {
     }
 
     @Test
-    void openapiGeneratorClient_ShouldSucceed_WhenMastercardApi() {
+    void openapiGeneratorClient_ShouldSucceed_WhenMastercardApi() throws Exception {
         {
             // GIVEN
             TestConfig testConfig = getMastercardConfig();
@@ -115,13 +121,14 @@ class OAuth2FilterTest extends BaseClientTest {
             assertNotNull(dog.getId());
 
             // WHEN: fetch resource
-            dog = api.getDog(dog.getId()).block();
+            var dogId = dog.getId();
+            dog = onNotFound("GET", () -> api.getDog(dogId).block(), error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
             // THEN
             assertNotNull(dog);
             assertNotNull(dog.getId());
 
             // WHEN / THEN: delete resource
-            api.deleteDog(dog.getId()).block();
+            onNotFound("DELETE", () -> api.deleteDog(dogId).block(), error -> error instanceof WebClientResponseException ex && ex.getStatusCode().value() == 404);
         }
     }
 

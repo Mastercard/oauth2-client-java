@@ -150,7 +150,7 @@ class OAuth2HandlerExecuteTest extends BaseTest {
         verify(adapter).sendAccessTokenRequest(eq(requestObject), any(URL.class), anyString(), any(HttpHeaders.class));
         verify(adapter, never()).sendResourceRequest(any(), any());
         assertEquals(
-            "Access token request failed (HTTP 500), body: {\"error\":\"internal_error\"}",
+            "Access token request failed (HTTP 500), body: <redacted>",
             listAppender.list
                 .stream()
                 .filter(e -> e.getLevel() == Level.ERROR)
@@ -177,7 +177,7 @@ class OAuth2HandlerExecuteTest extends BaseTest {
         verify(adapter, times(2)).sendAccessTokenRequest(eq(requestObject), any(URL.class), anyString(), any(HttpHeaders.class));
         verify(adapter).sendResourceRequest(eq(requestObject), any(HttpHeaders.class));
         assertEquals(
-            "API call failed (HTTP 500), body: {\"error\":\"internal_error\"}",
+            "API call failed (HTTP 500), body: <redacted>",
             listAppender.list
                 .stream()
                 .filter(e -> e.getLevel() == Level.ERROR)
@@ -196,12 +196,6 @@ class OAuth2HandlerExecuteTest extends BaseTest {
 
         // THEN
         assertEquals(responseObject, response);
-        assertNotNull(
-            listAppender.list
-                .stream()
-                .filter(e -> e.getLevel() == Level.DEBUG && "API call successful (HTTP 201), body: {\"success\":\"true\"}".equals(e.getFormattedMessage()))
-                .findFirst()
-        );
 
         // Verify authorization server was called, request headers and DPoP nonces
         var tokenRequestBodyCaptor = ArgumentCaptor.forClass(String.class);
@@ -224,6 +218,11 @@ class OAuth2HandlerExecuteTest extends BaseTest {
         var clientAssertions = tokenRequestBodyCaptor.getAllValues().stream().map(OAuth2HandlerExecuteTest::extractClientAssertion).toList();
         var uniqueAssertions = new HashSet<>(clientAssertions);
         assertEquals(clientAssertions.size(), uniqueAssertions.size());
+
+        String loggedMessages = listAppender.list.stream().map(ILoggingEvent::getFormattedMessage).collect(java.util.stream.Collectors.joining("\n"));
+        assertFalse(loggedMessages.contains(sampleAccessToken));
+        assertFalse(loggedMessages.contains(tokenRequestHeaders.get(0).get(DPOP.value()).get()));
+        assertFalse(loggedMessages.contains(clientAssertions.get(0)));
 
         // Verify resource server was called, request headers and DPoP nonces
         var resourceRequestHeadersCaptor = ArgumentCaptor.forClass(HttpHeaders.class);

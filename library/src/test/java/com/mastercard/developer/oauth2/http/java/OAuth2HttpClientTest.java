@@ -1,13 +1,15 @@
 package com.mastercard.developer.oauth2.http.java;
 
 import static com.mastercard.developer.oauth2.http.StandardHttpHeader.*;
+import static com.mastercard.developer.oauth2.test.fixtures.LiveResourceRetry.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.skyscreamer.jsonassert.JSONAssert.*;
 
-import com.mastercard.developer.oauth2.test.fixtures.BaseClientTest;
+import com.mastercard.developer.oauth2.test.fixtures.BaseHttpClientTest;
 import com.mastercard.developer.oauth2.test.fixtures.TestConfig;
 import com.mastercard.developer.test.openapi_generator.fake.java.api.ResourcesApi;
 import com.mastercard.developer.test.openapi_generator.fake.java.model.Resource;
+import com.mastercard.developer.test.openapi_generator.petstore.java.ApiException;
 import com.mastercard.developer.test.openapi_generator.petstore.java.api.PetsApi;
 import com.mastercard.developer.test.openapi_generator.petstore.java.model.Dog;
 import com.mastercard.developer.test.openapi_generator.petstore.java.model.NewDog;
@@ -20,38 +22,21 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 @SuppressWarnings("resource") // On JDK 11–20, java.net.http.HttpClient does not implement AutoCloseable
-class OAuth2HttpClientTest extends BaseClientTest {
-
-    @BeforeAll
-    static void beforeAll() {
-        System.setProperty("jdk.httpclient.HttpClient.log", "all");
-    }
-
-    @AfterAll
-    static void afterAll() {
-        System.clearProperty("jdk.httpclient.HttpClient.log");
-    }
+class OAuth2HttpClientTest extends BaseHttpClientTest {
 
     private static HttpClient.Builder httpClient(TestConfig testConfig) {
         HttpClient.Builder baseBuilder = HttpClient.newBuilder();
         return OAuth2HttpClient.newBuilder(testConfig.getOAuth2Config(), baseBuilder);
     }
 
-    @ParameterizedTest
-    @MethodSource("testConfigProvider")
-    void client_ShouldSucceed(Supplier<TestConfig> configSupplier) throws Exception {
+    @Override
+    protected void clientShouldSucceed(TestConfig testConfig, boolean retryOn404) throws Exception {
         // GIVEN
-        TestConfig testConfig = configSupplier.get();
         HttpClient client = httpClient(testConfig).build();
 
         // WHEN: create resource
@@ -65,8 +50,13 @@ class OAuth2HttpClientTest extends BaseClientTest {
         String resourceId = readResourceId(resource);
 
         // WHEN: fetch resource
-        HttpRequest getRequest = createGetRequest(testConfig, resourceId);
-        HttpResponse<String> getResponse = client.send(getRequest, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> getResponse = onNotFound(retryOn404, "GET", () -> {
+            HttpResponse<String> response = client.send(createGetRequest(testConfig, resourceId), HttpResponse.BodyHandlers.ofString());
+            if (retryOn404) {
+                failIfNotFound(response.statusCode());
+            }
+            return response;
+        });
         // THEN
         assertEquals(200, getResponse.statusCode());
         assertNotNull(getResponse.body());
@@ -74,8 +64,13 @@ class OAuth2HttpClientTest extends BaseClientTest {
         assertTrue(resource.contains("id")); // Resource fetched
 
         // WHEN: delete resource
-        HttpRequest deleteRequest = createDeleteRequest(testConfig, resourceId);
-        HttpResponse<Void> deleteResponse = client.send(deleteRequest, HttpResponse.BodyHandlers.discarding());
+        HttpResponse<Void> deleteResponse = onNotFound(retryOn404, "DELETE", () -> {
+            HttpResponse<Void> response = client.send(createDeleteRequest(testConfig, resourceId), HttpResponse.BodyHandlers.discarding());
+            if (retryOn404) {
+                failIfNotFound(response.statusCode());
+            }
+            return response;
+        });
         // THEN
         assertEquals(204, deleteResponse.statusCode()); // Resource deleted
     }
@@ -128,13 +123,21 @@ class OAuth2HttpClientTest extends BaseClientTest {
             assertNotNull(dog.getId());
 
             // WHEN: fetch resource
-            dog = api.getDog(dog.getId());
+            var dogId = dog.getId();
+            dog = onNotFound("GET", () -> api.getDog(dogId), error -> error instanceof ApiException ex && ex.getCode() == 404);
             // THEN
             assertNotNull(dog);
             assertNotNull(dog.getId());
 
             // WHEN / THEN: delete resource
-            api.deleteDog(dog.getId());
+            onNotFound(
+                "DELETE",
+                () -> {
+                    api.deleteDog(dogId);
+                    return null;
+                },
+                error -> error instanceof ApiException ex && ex.getCode() == 404
+            );
         }
     }
 

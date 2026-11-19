@@ -53,13 +53,6 @@ public abstract class BaseClientTest extends BaseTest {
         resourceServer.useInsufficientScopeScenario();
     }
 
-    protected static Stream<Arguments> testConfigProvider() {
-        return Stream.of(
-            createConfigArgument("Mastercard API", BaseClientTest::getMastercardConfig),
-            createConfigArgument("Fake authorization and resource servers", BaseClientTest::getFakeConfig)
-        );
-    }
-
     protected static Stream<Arguments> serverAndKeyProvider() {
         return Stream.of(
             createConfigArgument("Mastercard API + EC DPoP key", BaseClientTest::getMastercardConfigWithEcKey),
